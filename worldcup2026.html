@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Mondial 2026 ⚽</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d1a;
+  --surface:#161627;
+  --surface2:#1e1e35;
+  --red:#e63946;
+  --gold:#ffd700;
+  --green:#52b788;
+  --blue:#4361ee;
+  --text:#e8e8f5;
+  --dim:#7878a0;
+  --border:rgba(255,255,255,0.07);
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;max-width:520px;margin:0 auto;padding-bottom:20px}
+
+/* HEADER */
+.header{background:linear-gradient(160deg,#001f6b 0%,#c1001a 55%,#006232 100%);padding:24px 16px 52px;text-align:center;position:relative;overflow:hidden}
+.header::after{content:'⚽';position:absolute;font-size:180px;opacity:0.06;top:-30px;right:-20px;pointer-events:none}
+.hbadge{display:inline-block;background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.htitle{font-size:26px;font-weight:900;letter-spacing:-0.5px;line-height:1.1}
+.hsub{font-size:12px;opacity:0.75;margin-top:6px}
+
+/* TABS */
+.tabs{background:var(--surface);display:flex;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;margin-top:-32px;border-radius:16px 16px 0 0;overflow:hidden}
+.tab{flex:1;padding:13px 4px 11px;background:none;border:none;border-bottom:3px solid transparent;color:var(--dim);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;white-space:nowrap}
+.tab.on{color:var(--text);border-bottom-color:var(--red)}
+
+/* CONTENT */
+.content{padding:14px 12px}
+
+/* CHIPS */
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:10px;margin-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--dim);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.chip.on{background:var(--red);border-color:var(--red);color:#fff}
+
+/* DATE LABEL */
+.dlabel{font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1.2px;padding:14px 0 7px}
+.dlabel.today-lbl{color:var(--gold)}
+
+/* MATCH CARD */
+.mcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:8px;position:relative;overflow:hidden}
+.mcard.france-match{border-color:rgba(255,215,0,0.5);background:linear-gradient(135deg,var(--surface),#1a1a30)}
+.mcard.france-match::before{content:'⭐ Les Bleus';position:absolute;top:0;right:12px;background:var(--gold);color:#000;font-size:9px;font-weight:800;padding:2px 10px;border-radius:0 0 8px 8px}
+.mcard.live{border-color:var(--green)}
+.mcard.done{opacity:.68}
+.mcard.simul{border-left:3px solid var(--blue)}
+
+.mrow{display:flex;align-items:center;gap:6px}
+.team{flex:1;display:flex;align-items:center;gap:7px}
+.team.r{flex-direction:row-reverse;text-align:right}
+.tflag{font-size:22px;flex-shrink:0;line-height:1}
+.tname{font-size:13px;font-weight:700;line-height:1.2}
+.tname.small{font-size:11px;color:var(--dim)}
+.center{text-align:center;flex-shrink:0;min-width:68px;padding:0 4px}
+.score{font-size:22px;font-weight:900;letter-spacing:3px;font-variant-numeric:tabular-nums}
+.htime{font-size:19px;font-weight:800;color:var(--gold)}
+.hvs{font-size:11px;color:var(--dim);font-weight:600}
+
+.mmeta{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:9px;border-top:1px solid var(--border)}
+.minfo{font-size:11px;color:var(--dim)}
+.chs{display:flex;gap:4px;align-items:center}
+.ch{font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px}
+.ch.m6{background:#e8620a;color:#fff}
+.ch.bein{background:#003580;color:#fff}
+.ch.m6plus{background:#d04000;color:#fff}
+.stbadge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.stbadge.live{background:rgba(82,183,136,.2);color:var(--green)}
+.stbadge.done{background:rgba(255,255,255,.06);color:var(--dim)}
+.stbadge.soon{background:rgba(255,215,0,.12);color:var(--gold)}
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* SIMUL TAG */
+.simul-tag{font-size:9px;color:var(--blue);font-weight:700;margin-left:4px}
+
+/* GROUPS GRID */
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px}
+.gcard h3{font-size:11px;font-weight:900;color:var(--dim);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:9px}
+.gteam{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;font-weight:600}
+.gteam.fr{color:var(--gold);font-weight:800}
+
+/* TV PAGE */
+.tv-section{margin-bottom:20px}
+.tv-section h2{font-size:14px;font-weight:800;margin-bottom:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+.tv-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+.tv-card.m6-card{border-color:rgba(232,98,10,.4)}
+.tv-card.bein-card{border-color:rgba(0,53,128,.4)}
+.tv-logo-big{display:inline-block;font-size:22px;font-weight:900;padding:6px 18px;border-radius:8px;margin-bottom:12px}
+.tv-logo-big.m6{background:#e8620a;color:#fff}
+.tv-logo-big.bein{background:#003580;color:#fff}
+.tv-row{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start}
+.tv-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.tv-txt{font-size:13px;line-height:1.5;color:var(--text)}
+.tv-txt strong{color:var(--gold)}
+.slots-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.slot{background:var(--surface2);border-radius:8px;padding:10px;text-align:center}
+.slot-time{font-size:22px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums}
+.slot-tz{font-size:10px;color:var(--dim);margin-top:2px}
+.note-box{background:var(--surface2);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--dim);line-height:1.6;margin-top:10px}
+.note-box strong{color:var(--text)}
+
+/* PHASE BANNER */
+.phase-banner{background:var(--surface2);border-radius:10px;padding:10px 14px;margin:14px 0 8px;display:flex;align-items:center;justify-content:space-between}
+.phase-name{font-size:13px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.8px}
+.phase-dates{font-size:11px;color:var(--dim)}
+
+/* EMPTY */
+.empty{text-align:center;padding:50px 16px;color:var(--dim)}
+.empty .eico{font-size:52px;margin-bottom:12px}
+
+/* STATS CHIPS */
+.stat-row{display:flex;gap:8px;margin-bottom:14px}
+.stat{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
+.stat-val{font-size:24px;font-weight:900}
+.stat-lbl{font-size:10px;color:var(--dim);margin-top:2px;font-weight:600;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hbadge">🏆 USA · Canada · Mexique</div>
+  <div class="htitle">Coupe du Monde 2026</div>
+  <div class="hsub">11 juin – 19 juillet 2026 · 48 équipes · 104 matchs</div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="setTab('today')" id="t-today">📅 Auj.</button>
+  <button class="tab" onclick="setTab('all')" id="t-all">📋 Tous</button>
+  <button class="tab" onclick="setTab('france')" id="t-france">🇫🇷 France</button>
+  <button class="tab" onclick="setTab('groups')" id="t-groups">🗂 Groupes</button>
+  <button class="tab" onclick="setTab('tv')" id="t-tv">📺 TV</button>
+</div>
+
+<div class="content" id="app"></div>
+
+<script>
+/* ========== DATA ========== */
+
+const FLAGS = {
+  'Mexique':'🇲🇽','Afrique du Sud':'🇿🇦','Corée du Sud':'🇰🇷','Tchéquie':'🇨🇿',
+  'Canada':'🇨🇦','Bosnie-Herzégovine':'🇧🇦','Qatar':'🇶🇦','Suisse':'🇨🇭',
+  'Brésil':'🇧🇷','Maroc':'🇲🇦','Haïti':'🇭🇹','Écosse':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+  'États-Unis':'🇺🇸','Paraguay':'🇵🇾','Australie':'🇦🇺','Turquie':'🇹🇷',
+  'Allemagne':'🇩🇪','Curaçao':'🇨🇼',"Côte d'Ivoire":'🇨🇮','Équateur':'🇪🇨',
+  'Pays-Bas':'🇳🇱','Japon':'🇯🇵','Suède':'🇸🇪','Tunisie':'🇹🇳',
+  'Belgique':'🇧🇪','Égypte':'🇪🇬','Iran':'🇮🇷','Nouvelle-Zélande':'🇳🇿',
+  'Espagne':'🇪🇸','Cap-Vert':'🇨🇻','Arabie Saoudite':'🇸🇦','Uruguay':'🇺🇾',
+  'France':'🇫🇷','Sénégal':'🇸🇳','Irak':'🇮🇶','Norvège':'🇳🇴',
+  'Argentine':'🇦🇷','Algérie':'🇩🇿','Autriche':'🇦🇹','Jordanie':'🇯🇴',
+  'Portugal':'🇵🇹','RD Congo':'🇨🇩','Ouzbékistan':'🇺🇿','Colombie':'🇨🇴',
+  'Angleterre':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Croatie':'🇭🇷','Ghana':'🇬🇭','Panama':'🇵🇦'
+};
+
+const GROUPS = {
+  A:['Mexique','Afrique du Sud','Corée du Sud','Tchéquie'],
+  B:['Canada','Bosnie-Herzégovine','Qatar','Suisse'],
+  C:['Brésil','Maroc','Haïti','Écosse'],
+  D:['États-Unis','Paraguay','Australie','Turquie'],
+  E:['Allemagne','Curaçao',"Côte d'Ivoire",'Équateur'],
+  F:['Pays-Bas','Japon','Suède','Tunisie'],
+  G:['Belgique','Égypte','Iran','Nouvelle-Zélande'],
+  H:['Espagne','Cap-Vert','Arabie Saoudite','Uruguay'],
+  I:['France','Sénégal','Irak','Norvège'],
+  J:['Argentine','Algérie','Autriche','Jordanie'],
+  K:['Portugal','RD Congo','Ouzbékistan','Colombie'],
+  L:['Angleterre','Croatie','Ghana','Panama']
+};
+
+// ch: 'b'=beIN Sports, 'm'=M6+beIN+M6+ (gratuit+abonnement)
+// status: 'done'=terminé, 'live'=en cours, 'up'=à venir
+// simul: matchs simultanés (dernière journée)
+const M = [
+  // ---- JOURNÉE 1 ----
+  {id:1, d:'2026-06-11',h:'21:00',t1:'Mexique',         t2:'Afrique du Sud',     g:'A',sc:'2-0', st:'done',ch:'b'},
+  {id:2, d:'2026-06-12',h:'04:00',t1:'Corée du Sud',    t2:'Tchéquie',           g:'A',sc:'2-1', st:'done',ch:'b'},
+  {id:3, d:'2026-06-12',h:'21:00',t1:'Canada',          t2:'Bosnie-Herzégovine', g:'B',         st:'up',  ch:'b'},
+  {id:4, d:'2026-06-13',h:'03:00',t1:'États-Unis',      t2:'Paraguay',           g:'D',         st:'up',  ch:'b'},
+  {id:5, d:'2026-06-13',h:'21:00',t1:'Qatar',           t2:'Suisse',             g:'B',         st:'up',  ch:'b'},
+  {id:6, d:'2026-06-14',h:'00:00',t1:'Brésil',          t2:'Maroc',              g:'C',         st:'up',  ch:'b'},
+  {id:7, d:'2026-06-14',h:'03:00',t1:'Haïti',           t2:'Écosse',             g:'C',         st:'up',  ch:'b'},
+  {id:8, d:'2026-06-14',h:'06:00',t1:'Australie',       t2:'Turquie',            g:'D',         st:'up',  ch:'b'},
+  {id:9, d:'2026-06-14',h:'19:00',t1:'Allemagne',       t2:'Curaçao',            g:'E',         st:'up',  ch:'b'},
+  {id:10,d:'2026-06-14',h:'22:00',t1:'Pays-Bas',        t2:'Japon',              g:'F',         st:'up',  ch:'b'},
+  {id:11,d:'2026-06-15',h:'01:00',t1:"Côte d'Ivoire",   t2:'Équateur',           g:'E',         st:'up',  ch:'b'},
+  {id:12,d:'2026-06-15',h:'04:00',t1:'Suède',           t2:'Tunisie',            g:'F',         st:'up',  ch:'b'},
+  {id:13,d:'2026-06-15',h:'18:00',t1:'Espagne',         t2:'Cap-Vert',           g:'H',         st:'up',  ch:'b'},
+  {id:14,d:'2026-06-15',h:'21:00',t1:'Belgique',        t2:'Égypte',             g:'G',         st:'up',  ch:'b'},
+  {id:15,d:'2026-06-16',h:'00:00',t1:'Arabie Saoudite', t2:'Uruguay',            g:'H',         st:'up',  ch:'b'},
+  {id:16,d:'2026-06-16',h:'03:00',t1:'Iran',            t2:'Nouvelle-Zélande',   g:'G',         st:'up',  ch:'b'},
+  {id:17,d:'2026-06-16',h:'21:00',t1:'France',          t2:'Sénégal',            g:'I',         st:'up',  ch:'m'},
+  {id:18,d:'2026-06-17',h:'00:00',t1:'Irak',            t2:'Norvège',            g:'I',         st:'up',  ch:'b'},
+  {id:19,d:'2026-06-17',h:'03:00',t1:'Argentine',       t2:'Algérie',            g:'J',         st:'up',  ch:'b'},
+  {id:20,d:'2026-06-17',h:'06:00',t1:'Autriche',        t2:'Jordanie',           g:'J',         st:'up',  ch:'b'},
+  {id:21,d:'2026-06-17',h:'19:00',t1:'Portugal',        t2:'RD Congo',           g:'K',         st:'up',  ch:'b'},
+  {id:22,d:'2026-06-17',h:'22:00',t1:'Angleterre',      t2:'Croatie',            g:'L',         st:'up',  ch:'b'},
+  {id:23,d:'2026-06-18',h:'01:00',t1:'Ghana',           t2:'Panama',             g:'L',         st:'up',  ch:'b'},
+  {id:24,d:'2026-06-18',h:'04:00',t1:'Ouzbékistan',     t2:'Colombie',           g:'K',         st:'up',  ch:'b'},
+
+  // ---- JOURNÉE 2 ----
+  {id:25,d:'2026-06-18',h:'18:00',t1:'Tchéquie',        t2:'Afrique du Sud',     g:'A',         st:'up',  ch:'b'},
+  {id:26,d:'2026-06-18',h:'21:00',t1:'Suisse',          t2:'Bosnie-Herzégovine', g:'B',         st:'up',  ch:'b'},
+  {id:27,d:'2026-06-19',h:'00:00',t1:'Canada',          t2:'Qatar',              g:'B',         st:'up',  ch:'b'},
+  {id:28,d:'2026-06-19',h:'03:00',t1:'Mexique',         t2:'Corée du Sud',       g:'A',         st:'up',  ch:'b'},
+  {id:29,d:'2026-06-19',h:'21:00',t1:'États-Unis',      t2:'Australie',          g:'D',         st:'up',  ch:'b'},
+  {id:30,d:'2026-06-20',h:'00:00',t1:'Écosse',          t2:'Maroc',              g:'C',         st:'up',  ch:'b'},
+  {id:31,d:'2026-06-20',h:'03:00',t1:'Brésil',          t2:'Haïti',              g:'C',         st:'up',  ch:'b'},
+  {id:32,d:'2026-06-20',h:'06:00',t1:'Turquie',         t2:'Paraguay',           g:'D',         st:'up',  ch:'b'},
+  {id:33,d:'2026-06-20',h:'19:00',t1:'Pays-Bas',        t2:'Suède',              g:'F',         st:'up',  ch:'b'},
+  {id:34,d:'2026-06-20',h:'22:00',t1:'Allemagne',       t2:"Côte d'Ivoire",      g:'E',         st:'up',  ch:'b'},
+  {id:35,d:'2026-06-21',h:'02:00',t1:'Équateur',        t2:'Curaçao',            g:'E',         st:'up',  ch:'b'},
+  {id:36,d:'2026-06-21',h:'06:00',t1:'Tunisie',         t2:'Japon',              g:'F',         st:'up',  ch:'b'},
+  {id:37,d:'2026-06-21',h:'18:00',t1:'Espagne',         t2:'Arabie Saoudite',    g:'H',         st:'up',  ch:'b'},
+  {id:38,d:'2026-06-21',h:'21:00',t1:'Belgique',        t2:'Iran',               g:'G',         st:'up',  ch:'b'},
+  {id:39,d:'2026-06-22',h:'00:00',t1:'Uruguay',         t2:'Cap-Vert',           g:'H',         st:'up',  ch:'b'},
+  {id:40,d:'2026-06-22',h:'03:00',t1:'Nouvelle-Zélande',t2:'Égypte',             g:'G',         st:'up',  ch:'b'},
+  {id:41,d:'2026-06-22',h:'19:00',t1:'Argentine',       t2:'Autriche',           g:'J',         st:'up',  ch:'b'},
+  {id:42,d:'2026-06-22',h:'23:00',t1:'France',          t2:'Irak',               g:'I',         st:'up',  ch:'m'},
+  {id:43,d:'2026-06-23',h:'02:00',t1:'Norvège',         t2:'Sénégal',            g:'I',         st:'up',  ch:'b'},
+  {id:44,d:'2026-06-23',h:'05:00',t1:'Jordanie',        t2:'Algérie',            g:'J',         st:'up',  ch:'b'},
+  {id:45,d:'2026-06-23',h:'19:00',t1:'Portugal',        t2:'Ouzbékistan',        g:'K',         st:'up',  ch:'b'},
+  {id:46,d:'2026-06-23',h:'22:00',t1:'Angleterre',      t2:'Ghana',              g:'L',         st:'up',  ch:'b'},
+  {id:47,d:'2026-06-24',h:'01:00',t1:'Panama',          t2:'Croatie',            g:'L',         st:'up',  ch:'b'},
+  {id:48,d:'2026-06-24',h:'04:00',t1:'Colombie',        t2:'RD Congo',           g:'K',         st:'up',  ch:'b'},
+
+  // ---- JOURNÉE 3 (matchs simultanés par groupe) ----
+  {id:49,d:'2026-06-24',h:'21:00',t1:'Suisse',          t2:'Canada',             g:'B',         st:'up',  ch:'b', sim:1},
+  {id:50,d:'2026-06-24',h:'21:00',t1:'Bosnie-Herzégovine',t2:'Qatar',            g:'B',         st:'up',  ch:'b', sim:1},
+  {id:51,d:'2026-06-25',h:'00:00',t1:'Écosse',          t2:'Brésil',             g:'C',         st:'up',  ch:'b', sim:1},
+  {id:52,d:'2026-06-25',h:'00:00',t1:'Maroc',           t2:'Haïti',              g:'C',         st:'up',  ch:'b', sim:1},
+  {id:53,d:'2026-06-25',h:'03:00',t1:'Tchéquie',        t2:'Mexique',            g:'A',         st:'up',  ch:'b', sim:1},
+  {id:54,d:'2026-06-25',h:'03:00',t1:'Afrique du Sud',  t2:'Corée du Sud',       g:'A',         st:'up',  ch:'b', sim:1},
+  {id:55,d:'2026-06-25',h:'22:00',t1:'Équateur',        t2:'Allemagne',          g:'E',         st:'up',  ch:'b', sim:1},
+  {id:56,d:'2026-06-25',h:'22:00',t1:'Curaçao',         t2:"Côte d'Ivoire",      g:'E',         st:'up',  ch:'b', sim:1},
+  {id:57,d:'2026-06-26',h:'01:00',t1:'Japon',           t2:'Suède',              g:'F',         st:'up',  ch:'b', sim:1},
+  {id:58,d:'2026-06-26',h:'01:00',t1:'Tunisie',         t2:'Pays-Bas',           g:'F',         st:'up',  ch:'b', sim:1},
+  {id:59,d:'2026-06-26',h:'04:00',t1:'Turquie',         t2:'États-Unis',         g:'D',         st:'up',  ch:'b', sim:1},
+  {id:60,d:'2026-06-26',h:'04:00',t1:'Paraguay',        t2:'Australie',          g:'D',         st:'up',  ch:'b', sim:1},
+  {id:61,d:'2026-06-26',h:'21:00',t1:'Norvège',         t2:'France',             g:'I',         st:'up',  ch:'m', sim:1},
+  {id:62,d:'2026-06-26',h:'21:00',t1:'Sénégal',         t2:'Irak',               g:'I',         st:'up',  ch:'b', sim:1},
+  {id:63,d:'2026-06-27',h:'02:00',t1:'Cap-Vert',        t2:'Arabie Saoudite',    g:'H',         st:'up',  ch:'b', sim:1},
+  {id:64,d:'2026-06-27',h:'02:00',t1:'Uruguay',         t2:'Espagne',            g:'H',         st:'up',  ch:'b', sim:1},
+  {id:65,d:'2026-06-27',h:'05:00',t1:'Égypte',          t2:'Iran',               g:'G',         st:'up',  ch:'b', sim:1},
+  {id:66,d:'2026-06-27',h:'05:00',t1:'Nouvelle-Zélande',t2:'Belgique',           g:'G',         st:'up',  ch:'b', sim:1},
+  {id:67,d:'2026-06-27',h:'23:00',t1:'Panama',          t2:'Angleterre',         g:'L',         st:'up',  ch:'b', sim:1},
+  {id:68,d:'2026-06-27',h:'23:00',t1:'Croatie',         t2:'Ghana',              g:'L',         st:'up',  ch:'b', sim:1},
+  {id:69,d:'2026-06-28',h:'01:30',t1:'Colombie',        t2:'Portugal',           g:'K',         st:'up',  ch:'b', sim:1},
+  {id:70,d:'2026-06-28',h:'01:30',t1:'RD Congo',        t2:'Ouzbékistan',        g:'K',         st:'up',  ch:'b', sim:1},
+  {id:71,d:'2026-06-28',h:'04:00',t1:'Algérie',         t2:'Autriche',           g:'J',         st:'up',  ch:'b', sim:1},
+  {id:72,d:'2026-06-28',h:'04:00',t1:'Jordanie',        t2:'Argentine',          g:'J',         st:'up',  ch:'b', sim:1},
+
+  // ---- SEIZIÈMES DE FINALE (28 juin – 3 juillet) ----
+  {id:73, d:'2026-06-28',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:74, d:'2026-06-28',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:75, d:'2026-06-29',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:76, d:'2026-06-29',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:77, d:'2026-06-30',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:78, d:'2026-06-30',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:79, d:'2026-07-01',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:80, d:'2026-07-01',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:81, d:'2026-07-02',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:82, d:'2026-07-02',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:83, d:'2026-07-03',h:'03:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:84, d:'2026-07-03',h:'03:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:85, d:'2026-07-03',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:86, d:'2026-07-03',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:87, d:'2026-07-04',h:'03:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+  {id:88, d:'2026-07-04',h:'03:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'16e de finale',st:'up',ch:'b'},
+
+  // ---- HUITIÈMES DE FINALE (4–7 juillet) ----
+  {id:89, d:'2026-07-04',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'8e de finale',st:'up',ch:'b'},
+  {id:90, d:'2026-07-04',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'8e de finale',st:'up',ch:'b'},
+  {id:91, d:'2026-07-05',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'8e de finale',st:'up',ch:'b'},
+  {id:92, d:'2026-07-05',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'8e de finale',st:'up',ch:'b'},
+  {id:93, d:'2026-07-06',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'8e de finale',st:'up',ch:'b'},
+  {id:94, d:'2026-07-06',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'8e de finale',st:'up',ch:'b'},
+  {id:95, d:'2026-07-07',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'8e de finale',st:'up',ch:'b'},
+  {id:96, d:'2026-07-07',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'8e de finale',st:'up',ch:'b'},
+
+  // ---- QUARTS DE FINALE (9–11 juillet) ----
+  {id:97, d:'2026-07-09',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'Quart de finale',st:'up',ch:'b'},
+  {id:98, d:'2026-07-10',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'Quart de finale',st:'up',ch:'b'},
+  {id:99, d:'2026-07-10',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'Quart de finale',st:'up',ch:'b'},
+  {id:100,d:'2026-07-11',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'Quart de finale',st:'up',ch:'b'},
+
+  // ---- DEMI-FINALES (14–15 juillet) ----
+  {id:101,d:'2026-07-14',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'Demi-finale',st:'up',ch:'m'},
+  {id:102,d:'2026-07-15',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'Demi-finale',st:'up',ch:'m'},
+
+  // ---- PETITE FINALE ----
+  {id:103,d:'2026-07-18',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'3ème place',st:'up',ch:'m'},
+
+  // ---- FINALE ----
+  {id:104,d:'2026-07-19',h:'21:00',t1:'Qualifié',t2:'Qualifié',g:null,rnd:'FINALE',st:'up',ch:'m'}
+];
+
+/* ========== HELPERS ========== */
+
+function today() {
+  return new Date().toISOString().slice(0,10);
+}
+
+function fmtDate(d) {
+  const [y,mo,da] = d.split('-');
+  const days = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const months = ['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+  const dt = new Date(+y,+mo-1,+da);
+  return `${days[dt.getDay()]} ${+da} ${months[+mo-1]}`;
+}
+
+function isToday(d) { return d === today(); }
+function isFrance(m) { return m.t1==='France' || m.t2==='France'; }
+function isKnown(m) { return !!FLAGS[m.t1]; }
+
+function chBadges(ch) {
+  if(ch==='m') return `<span class="ch m6">M6</span><span class="ch m6plus">M6+</span><span class="ch bein">beIN</span>`;
+  return `<span class="ch bein">beIN</span>`;
+}
+
+function stBadge(m) {
+  if(m.st==='live') return `<span class="stbadge live"><span class="live-dot"></span>En direct</span>`;
+  if(m.st==='done') return `<span class="stbadge done">Terminé</span>`;
+  // check if upcoming match is "today"
+  if(m.d===today()) return `<span class="stbadge soon">⏰ Aujourd'hui</span>`;
+  return '';
+}
+
+function matchCard(m) {
+  const fr = isFrance(m);
+  const f1 = FLAGS[m.t1] || '🏳️';
+  const f2 = FLAGS[m.t2] || '🏳️';
+  const cls = [
+    'mcard',
+    fr ? 'france-match' : '',
+    m.st==='live' ? 'live' : '',
+    m.st==='done' ? 'done' : '',
+    m.sim ? 'simul' : ''
+  ].filter(Boolean).join(' ');
+
+  const grpLabel = m.g ? `Groupe ${m.g}` : (m.rnd || '');
+  const simulTag = m.sim ? `<span class="simul-tag">⟳ simultané</span>` : '';
+
+  let centerHTML;
+  if(m.st==='done' && m.sc) {
+    centerHTML = `<div class="score">${m.sc}</div>`;
+  } else if(m.st==='live') {
+    centerHTML = `<div class="score" style="color:var(--green)">${m.sc||'? - ?'}</div>`;
+  } else {
+    centerHTML = `<div class="htime">${m.h}</div><div class="hvs">vs</div>`;
+  }
+
+  const t1small = !FLAGS[m.t1] ? 'small' : '';
+  const t2small = !FLAGS[m.t2] ? 'small' : '';
+
+  return `<div class="${cls}">
+  <div class="mrow">
+    <div class="team">
+      <span class="tflag">${f1}</span>
+      <span class="tname ${t1small}">${m.t1}</span>
+    </div>
+    <div class="center">${centerHTML}</div>
+    <div class="team r">
+      <span class="tflag">${f2}</span>
+      <span class="tname ${t2small}">${m.t2}</span>
+    </div>
+  </div>
+  <div class="mmeta">
+    <span class="minfo">${grpLabel}${simulTag}</span>
+    <div class="chs">${stBadge(m)}${chBadges(m.ch)}</div>
+  </div>
+</div>`;
+}
+
+function groupMatchesByDate(list) {
+  const map = new Map();
+  list.forEach(m => {
+    if(!map.has(m.d)) map.set(m.d,[]);
+    map.get(m.d).push(m);
+  });
+  return map;
+}
+
+function renderList(list) {
+  if(!list.length) return `<div class="empty"><div class="eico">🔍</div>Aucun match trouvé</div>`;
+  const byDate = groupMatchesByDate(list);
+  let html = '';
+  const td = today();
+  let prevRnd = null;
+  byDate.forEach((matches, date) => {
+    const isT = date===td;
+    html += `<div class="dlabel ${isT?'today-lbl':''}">`;
+    html += isT ? `📅 AUJOURD'HUI – ${fmtDate(date)}` : fmtDate(date);
+    html += `</div>`;
+
+    matches.forEach(m => {
+      // insert phase banner for knockout rounds
+      const rnd = m.rnd || (m.g ? 'Phase de groupes' : '');
+      if(rnd && rnd!==prevRnd && !m.g) {
+        html += `<div class="phase-banner"><span class="phase-name">🏆 ${rnd}</span></div>`;
+        prevRnd = rnd;
+      }
+      html += matchCard(m);
+    });
+  });
+  return html;
+}
+
+/* ========== STATE & RENDER ========== */
+
+let tab = 'today';
+let grpFilter = 'all';
+
+function setTab(t) {
+  tab = t;
+  grpFilter = 'all';
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('t-'+t).classList.add('on');
+  render();
+}
+
+function setGrp(g) {
+  grpFilter = g;
+  document.querySelectorAll('.chip').forEach(b=>{
+    b.classList.toggle('on', b.dataset.g===g);
+  });
+  renderMatchList();
+}
+
+let lastRenderedTab = null;
+
+function render() {
+  lastRenderedTab = tab;
+  const app = document.getElementById('app');
+  if(tab==='today') renderToday(app);
+  else if(tab==='all') renderAll(app);
+  else if(tab==='france') renderFrance(app);
+  else if(tab==='groups') renderGroups(app);
+  else if(tab==='tv') renderTV(app);
+}
+
+function renderToday(app) {
+  const td = today();
+  const matches = M.filter(m=>m.d===td);
+
+  // also show matches that started "last night" (from previous day but >00:00 today)
+  // And next upcoming matches if nothing today
+  let html = '';
+
+  // Stats row
+  const done = M.filter(m=>m.st==='done').length;
+  const france = M.filter(m=>isFrance(m)).length;
+  html += `<div class="stat-row">
+    <div class="stat"><div class="stat-val">${done}</div><div class="stat-lbl">Terminés</div></div>
+    <div class="stat"><div class="stat-val">${M.length-done}</div><div class="stat-lbl">À venir</div></div>
+    <div class="stat"><div class="stat-val" style="color:var(--gold)">3</div><div class="stat-lbl">Matchs France</div></div>
+  </div>`;
+
+  if(matches.length) {
+    html += `<div class="dlabel today-lbl">📅 Aujourd'hui – ${fmtDate(td)}</div>`;
+    matches.forEach(m=>{ html+=matchCard(m); });
+  } else {
+    // Next upcoming day
+    const upcoming = M.filter(m=>m.d>td&&m.st!=='done').slice(0,6);
+    if(upcoming.length) {
+      const nextDate = upcoming[0].d;
+      const nextMatches = upcoming.filter(m=>m.d===nextDate);
+      html += `<div class="empty"><div class="eico">📭</div>Pas de match aujourd'hui</div>`;
+      html += `<div class="dlabel">⏭ Prochains matchs – ${fmtDate(nextDate)}</div>`;
+      nextMatches.forEach(m=>{ html+=matchCard(m); });
+    } else {
+      html += `<div class="empty"><div class="eico">🏆</div>Tournoi terminé !</div>`;
+    }
+  }
+
+  // France next match
+  const nextFr = M.filter(m=>isFrance(m)&&m.st!=='done'&&m.d>=td)[0];
+  if(nextFr && nextFr.d!==td) {
+    html += `<div class="dlabel" style="color:var(--gold)">🇫🇷 Prochain match France</div>`;
+    html += matchCard(nextFr);
+  }
+
+  app.innerHTML = html;
+}
+
+function renderMatchList() {
+  const container = document.getElementById('match-list');
+  if(!container) return;
+  let list = M;
+  if(grpFilter!=='all') list = M.filter(m=>m.g===grpFilter);
+  container.innerHTML = renderList(list);
+}
+
+function renderAll(app) {
+  const groupKeys = Object.keys(GROUPS);
+  let chips = `<div class="chips">
+    <button class="chip on" data-g="all" onclick="setGrp('all')">Tous</button>`;
+  groupKeys.forEach(g=>{
+    chips += `<button class="chip" data-g="${g}" onclick="setGrp('${g}')">Groupe ${g}</button>`;
+  });
+  chips += `</div><div id="match-list"></div>`;
+  app.innerHTML = chips;
+  renderMatchList();
+}
+
+function renderFrance(app) {
+  const matches = M.filter(isFrance);
+  const td = today();
+  let html = `<div class="note-box" style="margin-bottom:14px;border-left:3px solid var(--gold)">
+    <strong>🇫🇷 Groupe I</strong> — France · Sénégal · Irak · Norvège<br>
+    Tous les matchs France sont en clair sur <strong>M6</strong> et en streaming sur <strong>M6+</strong><br>
+    et sur abonnement <strong>beIN Sports</strong>
+  </div>`;
+  html += renderList(matches);
+  app.innerHTML = html;
+}
+
+function renderGroups(app) {
+  let html = `<div class="ggrid">`;
+  Object.entries(GROUPS).forEach(([g,teams])=>{
+    html += `<div class="gcard">
+      <h3>Groupe ${g}</h3>`;
+    teams.forEach(t=>{
+      const isFr = t==='France';
+      html += `<div class="gteam${isFr?' fr':''}">
+        <span>${FLAGS[t]||'🏳️'}</span>
+        <span>${t}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  html += `</div>`;
+  app.innerHTML = html;
+}
+
+function renderTV(app) {
+  app.innerHTML = `
+  <div class="tv-section">
+    <h2>Diffusion en France</h2>
+
+    <div class="tv-card m6-card">
+      <div class="tv-logo-big m6">M6</div>
+      <div class="tv-row"><span class="tv-ico">📺</span>
+        <span class="tv-txt"><strong>54 matchs en clair</strong> — gratuit sur la TNT et en streaming sur <strong>M6+</strong> (sans inscription)</span>
+      </div>
+      <div class="tv-row"><span class="tv-ico">🇫🇷</span>
+        <span class="tv-txt"><strong>Tous les matchs de l'équipe de France</strong>, dont les phases éliminatoires si la France est qualifiée</span>
+      </div>
+      <div class="tv-row"><span class="tv-ico">🏆</span>
+        <span class="tv-txt">Les <strong>2 demi-finales</strong>, le <strong>match pour la 3ème place</strong> et la <strong>Finale</strong></span>
+      </div>
+      <div class="tv-row"><span class="tv-ico">⚽</span>
+        <span class="tv-txt">De grandes affiches de la phase de groupes et des phases finales</span>
+      </div>
+      <div class="note-box">
+        <strong>📱 Streaming gratuit :</strong> M6+ (m6plus.fr) — disponible sur mobile, tablette, PC et TV connectée, sans abonnement.
+      </div>
+    </div>
+
+    <div class="tv-card bein-card">
+      <div class="tv-logo-big bein">beIN SPORTS</div>
+      <div class="tv-row"><span class="tv-ico">📡</span>
+        <span class="tv-txt"><strong>104 matchs en intégralité</strong> — tous les matchs du tournoi, sur abonnement</span>
+      </div>
+      <div class="tv-row"><span class="tv-ico">💳</span>
+        <span class="tv-txt">Abonnement requis (~15€/mois) — disponible sur Canal+, Orange TV, SFR TV, Free, beIN CONNECT</span>
+      </div>
+      <div class="tv-row"><span class="tv-ico">🖥</span>
+        <span class="tv-txt">Streaming via <strong>beIN CONNECT</strong> sur tous les écrans</span>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <strong>⚠️ Attention :</strong> Pour la première fois depuis 1978, <strong>TF1 ne diffuse aucun match</strong> de la Coupe du Monde. C'est M6 qui détient les droits en clair (54 matchs) et beIN Sports l'intégralité (104 matchs).
+    </div>
+  </div>
+
+  <div class="tv-section">
+    <h2>Créneaux horaires (heure française)</h2>
+    <div class="slots-grid">
+      <div class="slot"><div class="slot-time">18h00</div><div class="slot-tz">Midi heure US Est</div></div>
+      <div class="slot"><div class="slot-time">21h00</div><div class="slot-tz">15h heure US Est</div></div>
+      <div class="slot"><div class="slot-time">23h00</div><div class="slot-tz">17h heure US Est</div></div>
+      <div class="slot"><div class="slot-time">03h00</div><div class="slot-tz">21h heure US Est</div></div>
+    </div>
+    <div class="note-box" style="margin-top:10px">
+      <strong>⏰ Décalage :</strong> La France est en avance de 6h sur la côte Est (New York) et de 9h sur la côte Ouest (Los Angeles). Certains matchs ont lieu entre <strong>minuit et 6h du matin</strong> heure française.
+    </div>
+  </div>
+
+  <div class="tv-section">
+    <h2>Matchs France sur M6</h2>
+    ${renderList(M.filter(isFrance))}
+  </div>
+  `;
+}
+
+/* ========== INIT ========== */
+render();
+
+// Update statuses dynamically based on current time
+function updateStatuses() {
+  const now = new Date();
+  M.forEach(m => {
+    if(m.st==='done') return;
+    const [hh,mm] = m.h.split(':').map(Number);
+    const matchStart = new Date(m.d+'T'+m.h+':00+02:00'); // CEST
+    const matchEnd = new Date(matchStart.getTime() + 110*60*1000); // ~110min
+    if(now >= matchStart && now <= matchEnd) m.st = 'live';
+    else if(now > matchEnd && m.d <= today()) {
+      // Don't auto-mark as done — scores need manual update
+    }
+  });
+}
+updateStatuses();
+</script>
+</body>
+</html>
