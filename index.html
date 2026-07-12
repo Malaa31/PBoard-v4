@@ -45,7 +45,10 @@ body{
 }
 .names{
   font-family:'Parisienne',cursive; font-size:2.6rem; text-align:center;
-  color:var(--wine); margin:6px 0 2px; line-height:1.1;
+  color:var(--ink); margin:6px 0 2px; line-height:1.1;
+}
+.hero-greeting{
+  text-align:center; font-size:.9rem; color:var(--ink); margin:8px 0 0;
 }
 .crest-wrap{ width:150px; height:150px; margin:0 auto 6px; }
 .crest-wrap.small{ width:96px; height:96px; }
@@ -57,8 +60,10 @@ header.hero{ text-align:center; margin-bottom:18px; }
 .stack{ display:flex; flex-direction:column; gap:14px; flex:1; }
 .defi-num{
   text-align:center; font-family:'Jost'; font-weight:600; font-size:.7rem;
-  letter-spacing:.28em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;
+  letter-spacing:.28em; text-transform:uppercase; color:var(--muted); margin-bottom:0;
 }
+.defi-rule{ border:none; border-top:1px solid var(--line); margin:14px auto; width:60%; }
+.defi-dash{ text-align:center; color:var(--muted); font-size:1rem; margin:-6px 0 4px; }
 .defi-emoji{ text-align:center; font-size:3.2rem; margin-bottom:6px; }
 .defi-text{
   font-family:'Cormorant',serif; font-style:italic; font-size:1.5rem; text-align:center;
@@ -69,7 +74,7 @@ header.hero{ text-align:center; margin-bottom:18px; }
   font-family:'Jost'; font-weight:600; font-size:.82rem; letter-spacing:.14em;
   text-transform:uppercase; cursor:pointer; text-align:center; text-decoration:none;
 }
-.btn-primary{ background:var(--wine); color:var(--paper); }
+.btn-primary{ background:var(--ink); color:var(--paper); }
 .btn-primary:active{ opacity:.85; }
 .btn-secondary{ background:var(--soft); color:var(--ink); border:1px solid var(--line); }
 .btn-ghost{
@@ -306,18 +311,18 @@ function render(){
     case "challenge": return renderChallenge();
     case "preview": return renderPreview();
     case "uploading": return renderUploading();
-    case "done": return renderDone();
     case "thanks": return renderThanks();
     case "album": return renderAlbum();
   }
 }
 
-function heroHtml(kicker){
+function heroHtml(kicker, greetingName){
   return '' +
     '<header class="hero">' +
       '<div class="crest-wrap"><div class="crest"></div></div>' +
       '<div class="names">Candice &amp; Louis</div>' +
       '<div class="kicker">' + esc(kicker) + '</div>' +
+      (greetingName ? '<p class="hero-greeting">Salut ' + esc(greetingName) + ' 👋</p>' : '') +
     '</header>';
 }
 
@@ -366,11 +371,12 @@ function renderChallenge(){
   var canReroll = state.rerollsUsed < 2;
   app.innerHTML = '' +
     heroHtml("Le jeu photo") +
-    '<p class="hint" style="margin-bottom:14px;">Bonjour ' + esc(state.name) + ' ! Voici ton défi.</p>' +
     '<div class="panel stack">' +
       '<div class="defi-num">Défi nº ' + num + '</div>' +
+      '<hr class="defi-rule" />' +
       '<div class="defi-emoji">' + defi[0] + '</div>' +
       '<p class="defi-text">' + esc(defi[1]) + '</p>' +
+      '<div class="defi-dash">—</div>' +
       '<button class="btn btn-primary" id="takePhotoBtn">Réaliser ce défi</button>' +
       (canReroll
         ? '<button class="btn-ghost" id="rerollBtn">Changer de défi (' + (2-state.rerollsUsed) + ' restant' + ((2-state.rerollsUsed)>1?'s':'') + ')</button>'
@@ -455,7 +461,7 @@ function startUpload(){
     state.currentFile = null;
     var doneCount = parseInt(localStorage.getItem("cl_done")||"0",10) + 1;
     localStorage.setItem("cl_done", String(doneCount));
-    state.screen = "done";
+    state.screen = "thanks";
     render();
   }).catch(function(err){
     state.uploadError = err && err.message === "timeout"
@@ -491,35 +497,19 @@ function uploadToCloudinary(file, defiText, guestName, onProgress){
   });
 }
 
-/* ---------- Done / loop ---------- */
-function renderDone(){
-  var doneCount = parseInt(localStorage.getItem("cl_done")||"0",10);
-  app.innerHTML = '' +
-    heroHtml("Le jeu photo") +
-    '<div class="panel stack">' +
-      '<div class="big-check">✅</div>' +
-      '<p class="hint" style="font-size:.95rem;">Défi relevé ! Tu as envoyé <strong>' + doneCount + '</strong> photo' + (doneCount>1?'s':'') + ' ce soir.</p>' +
-      '<button class="btn btn-primary" id="anotherBtn">Oui, un autre défi</button>' +
-      '<button class="btn btn-secondary" id="finishBtn">Non, j’ai terminé</button>' +
-    '</div>';
-  document.getElementById("anotherBtn").addEventListener("click", startNewTurn);
-  document.getElementById("finishBtn").addEventListener("click", function(){
-    state.screen = "thanks";
-    render();
-  });
-}
-
-/* ---------- Thanks ---------- */
+/* ---------- Thanks (shown after every successful upload) ---------- */
 function renderThanks(){
   var doneCount = parseInt(localStorage.getItem("cl_done")||"0",10);
   app.innerHTML = '' +
-    heroHtml("Merci") +
+    heroHtml("Le jeu photo", state.name) +
     '<div class="panel stack">' +
-      '<div class="big-check">💕</div>' +
-      '<p class="hint" style="font-size:1rem;">Merci ' + esc(state.name) + ' ! Tu as envoyé <strong>' + doneCount + '</strong> photo' + (doneCount>1?'s':'') + '. Candice &amp; Louis vous remercient du fond du cœur.</p>' +
-      '<button class="btn btn-secondary" id="restartBtn">Finalement, encore un défi</button>' +
-    '</div>';
-  document.getElementById("restartBtn").addEventListener("click", startNewTurn);
+      '<div class="crest-wrap small" style="margin-bottom:2px;"><div class="crest"></div></div>' +
+      '<div class="names" style="font-size:1.8rem;">Merci</div>' +
+      '<p class="hint" style="font-size:.95rem;">Merci ' + esc(state.name) + ' ! Vous avez fait vivre la soirée avec <strong>' + doneCount + '</strong> photo' + (doneCount>1?'s':'') + '. Tout est déjà dans l’album des mariés.</p>' +
+      '<div class="kicker">À très vite sur la piste</div>' +
+    '</div>' +
+    '<button class="btn btn-primary" id="anotherBtn" style="margin-top:16px;">Relever un nouveau défi</button>';
+  document.getElementById("anotherBtn").addEventListener("click", startNewTurn);
 }
 
 /* ---------- Album ---------- */
